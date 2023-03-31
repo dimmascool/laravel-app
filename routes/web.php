@@ -2,6 +2,10 @@
 
 use Illuminate\Support\Facades\Route;
 use League\CommonMark\Environment\Environment;
+use App\Http\Controllers\UserController;
+use App\Http\Controllers\HomeController;
+use App\Http\Middleware\GuestMiddleware;
+use App\Http\Middleware\MemberMiddleware;
 
 /*
 |--------------------------------------------------------------------------
@@ -14,14 +18,11 @@ use League\CommonMark\Environment\Environment;
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
-});
+Route::get('/dashboard', [HomeController::class, 'home']);
 
-Route::get('/environment', function () {
-    return 1;
-});
 
-Route::get('/test_blade', function () {
-    return view('templates/main');
+Route::controller(UserController::class)->group(function () {
+    Route::get('login', 'login')->name('loginPage')->middleware([GuestMiddleware::class]);
+    Route::post('login', 'doLogin')->name('loginAction')->middleware([GuestMiddleware::class]);
+    Route::post('logout', 'doLogout')->name('logoutAction')->middleware([MemberMiddleware::class]);
 });
